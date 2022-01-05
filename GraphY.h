@@ -15,15 +15,19 @@ struct print{//for print that we can return 2 values // may use it in floyd wars
   int dist;//for floyd
   int* chemin;//for floyd //array with node index
 };
-struct floyd{//D AND P FLOYD warshall
+struct floyd{//D(Distances) AND P(path) FLOYD warshall
   int** D;
   int** P;
+};
+struct djk{//D AND P fot djk
+  int* D;
+  int* P;
 };
 struct graph* new_graph();
 int is_empty(struct graph* G);//1 True(empty) ,0 False
 int add_node(struct graph* G,char lbl);//1 added 0 not added
 int add_edge(struct graph* G,char lbl_src , char lbl_dest,int wg);//1 added 0 not added
-int has_node(struct graph* G,char lbl);//1 there is node 0 no
+int has_node(struct graph* G,char lbl);// number there is node -1 no
 int has_edge(struct graph* G,char lbl_src , char lbl_dest);//1 there is edge 0 no
 void del_edge(struct graph* G,char lbl_src , char lbl_dest);
 void del_node(struct graph* G,char lbl);
@@ -46,14 +50,15 @@ int is_cyclic(struct graph* G);//topology_ordre=NULL 1 means cyclic 0 no//moch m
 //rang dune sommet f tri topologie
 /********************************************************/
 struct floyd* floydwarshall(struct graph* G);//oriented no negatif cycle!!!!
-struct print* floydwarshall_result(struct graph* G,char lbl1 ,char lbl2 );
+struct print* floydwarshall_result(struct graph* G,char lbl1 ,char lbl2 );//return chemin
+//yomkn lezem func tprinti
 int is_connex(struct graph* G);//no INF IN floyd warshall D//fortement  il exsite une chemin entre deux noeud;//1 means connex 0 no//moch mjarrab
+struct djk* dijkestra(struct graph* G,char src);
 //distance
 //int diametre
 //Trasitive closure
-//mazel fazet l distance
+
 //bellfort
-//djikestra
 //coloriage
 //pofondeur
 //largeur

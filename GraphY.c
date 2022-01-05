@@ -410,7 +410,7 @@ char* topology_ordre(struct graph* G){
 return ret;
 }
 int is_cyclic(struct graph* G){if (topology_ordre(G)==NULL) return 1; return 0;}
-/*****************************************************/
+/***************** floyd ************************************/
 struct floyd* floydwarshall(struct graph* G){
   int or = graph_order(G);
   struct floyd* ret = malloc(sizeof(struct floyd));
@@ -431,12 +431,16 @@ struct floyd* floydwarshall(struct graph* G){
           ret->D[i][j]=ret->D[i][k]+ret->D[k][j];
           ret->P[i][j]=k;
         }
+        /****/
+        //negative cycle diagonal <0
+        if(i==j&&ret->D[i][j]<0) return NULL;
+        /****/
       }
     }
   }
   return ret;
 }
-
+//if floydwarshall is not null print
 struct print* floydwarshall_result(struct graph* G,char lbl1 ,char lbl2 ){
   struct floyd* f=floydwarshall(G);
   struct print* p=malloc(sizeof(struct print));
@@ -466,14 +470,12 @@ struct print* floydwarshall_result(struct graph* G,char lbl1 ,char lbl2 ){
     }
     temp1=*(res_int+i);
     temp2=*(res_int+i+1);
-  /*for(j=0;j<p->len;j++)
-      printf("%d\t",*(res_int+j));
-    printf("\n" );*/
   } while(temp2!=number2);
   p->chemin=res_int;
   //print with label_node_i
   return p;
 }
+
 int is_connex(struct graph* G){
   int or = graph_order(G);
   int** ret = floydwarshall(G)->D;
@@ -484,4 +486,35 @@ int is_connex(struct graph* G){
     }
   }
   return 1;
+}
+/***************** dijkestra ************************************/
+struct djk* dijkestra(struct graph* G,char src){
+  /*check src in graph*/
+  if(has_node(G,src)==-1) return NULL;
+  int or = graph_order(G);
+  //init distace INF (src 0) et path NULL
+  struct djk* d= malloc(sizeof(struct djk));
+  d->D=malloc(or*sizeof(int));
+  d->P=malloc(or*sizeof(int));
+  int i=0;
+  for (; i < or; i++) d->D[i]=INF;  d->D[has_node(G,src)]=0;
+  //-1 means no path
+  //parcour graph
+  struct Node* parcour = G->begin;
+  struct Node* v;//neighbor
+  int index_parcour,index_v;
+  while (parcour->next!=NULL) {
+    v=parcour->neighbors;
+    index_parcour=has_node(G,parcour->label);
+    while (v!=NULL) {
+      index_v=has_node(G,v->label);
+      if (d->D[index_v]>d->D[index_parcour]+v->weight) {
+        d->D[index_v]=d->D[index_parcour]+v->weight;
+        d->P[index_v]=index_parcour;
+      }
+      v=v->neighbors;
+    }
+    parcour=parcour->next;
+  }
+return d;
 }
